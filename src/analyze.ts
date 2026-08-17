@@ -1,10 +1,11 @@
 import { PitchDetector } from "pitchy";
 import { noteToFrequency } from "./notes.ts";
 
+const BPM = 200;
+
 export async function analyzeAudio(
 	file: File,
 	chords: string[],
-	bpm: number,
 ): Promise<string[]> {
 	const arrayBuffer = await file.arrayBuffer();
 	const audioCtx = new AudioContext();
@@ -13,7 +14,7 @@ export async function analyzeAudio(
 
 	const sampleRate = audioBuffer.sampleRate;
 	const channel = audioBuffer.getChannelData(0);
-	const samplesPerNote = Math.round((sampleRate * 60) / bpm);
+	const samplesPerNote = Math.round((sampleRate * 60) / BPM);
 
 	const chunkSize = 4096;
 	const detector = PitchDetector.forFloat32Array(chunkSize);

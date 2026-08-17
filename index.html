@@ -20,16 +20,12 @@
         <h2>エンコード</h2>
         <form id="encode-form">
           <label>
-            コード進行 (カンマ区切り、例: C4,F4,G4,A4)
+            コード進行 (カンマ区切り)
             <input type="text" id="chords" value="C4,F4,G4,A4" required />
           </label>
           <label>
             メッセージ
             <input type="text" id="message" placeholder="送信したいテキストを入力" required />
-          </label>
-          <label>
-            BPM: <span id="bpm-value">150</span>
-            <input type="range" id="bpm" min="40" max="240" value="150" />
           </label>
           <button type="submit">WAV を生成</button>
         </form>
@@ -42,11 +38,6 @@
           <label>
             コード進行 (エンコード時と同じもの)
             <input type="text" id="decode-chords" value="C4,F4,G4,A4" required />
-          </label>
-          <label>
-            BPM (エンコード時と同じもの)
-            <span id="decode-bpm-value">150</span>
-            <input type="range" id="decode-bpm" min="40" max="240" value="150" />
           </label>
           <label>
             音声ファイル

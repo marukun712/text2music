@@ -36,32 +36,16 @@ function mount(): void {
 	const encodeForm = document.getElementById("encode-form") as HTMLFormElement;
 	const chordsInput = document.getElementById("chords") as HTMLInputElement;
 	const messageInput = document.getElementById("message") as HTMLInputElement;
-	const bpmSlider = document.getElementById("bpm") as HTMLInputElement;
-	const bpmDisplay = document.getElementById("bpm-value") as HTMLSpanElement;
 	const encodeStatus = document.getElementById("encode-status") as HTMLElement;
 
 	const decodeForm = document.getElementById("decode-form") as HTMLFormElement;
 	const decodeChordsInput = document.getElementById(
 		"decode-chords",
 	) as HTMLInputElement;
-	const decodeBpmSlider = document.getElementById(
-		"decode-bpm",
-	) as HTMLInputElement;
-	const decodeBpmDisplay = document.getElementById(
-		"decode-bpm-value",
-	) as HTMLSpanElement;
 	const audioFileInput = document.getElementById(
 		"audio-file",
 	) as HTMLInputElement;
 	const decodeOutput = document.getElementById("decode-output") as HTMLElement;
-
-	bpmSlider.addEventListener("input", () => {
-		bpmDisplay.textContent = bpmSlider.value;
-	});
-
-	decodeBpmSlider.addEventListener("input", () => {
-		decodeBpmDisplay.textContent = decodeBpmSlider.value;
-	});
 
 	encodeForm.addEventListener("submit", async (e) => {
 		e.preventDefault();
@@ -69,7 +53,6 @@ function mount(): void {
 
 		const chords = parseChords(chordsInput.value);
 		const message = messageInput.value;
-		const bpm = parseInt(bpmSlider.value, 10);
 
 		let bits = textToBits(message);
 		const bitsPerSymbol = Math.log2(chords.length);
@@ -85,7 +68,7 @@ function mount(): void {
 		}
 
 		try {
-			const wav = renderToWav(melody, bpm);
+			const wav = await renderToWav(melody);
 			downloadBlob(wav, "encoded.wav");
 			encodeStatus.textContent = `完了 (${melody.length} ノート)`;
 		} catch (err) {
@@ -99,7 +82,6 @@ function mount(): void {
 		decodeOutput.textContent = "解析中...";
 
 		const chords = parseChords(decodeChordsInput.value);
-		const bpm = parseInt(decodeBpmSlider.value, 10);
 		const file = audioFileInput.files?.[0];
 
 		if (!file) {
@@ -108,7 +90,7 @@ function mount(): void {
 		}
 
 		try {
-			const melody = await analyzeAudio(file, chords, bpm);
+			const melody = await analyzeAudio(file, chords);
 			const text = decode(chords, melody);
 			decodeOutput.textContent = text;
 		} catch (err) {

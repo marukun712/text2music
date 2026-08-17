@@ -1,31 +1,25 @@
 import toWav from "audiobuffer-to-wav";
-import { noteToFrequency } from "./notes.ts";
+import * as Tone from "tone";
 
-const SAMPLE_RATE = 44100;
+const BPM = 200;
 
-export function renderToWav(notes: string[], bpm: number): Blob {
-	const secondsPerNote = 60 / bpm;
-	const samplesPerNote = Math.round(SAMPLE_RATE * secondsPerNote);
+export async function renderToWav(notes: string[]): Promise<Blob> {
+	const secondsPerNote = 60 / BPM;
+	const duration = notes.length * secondsPerNote + 1;
 
-	const ctx = new OfflineAudioContext(
-		1,
-		notes.length * samplesPerNote,
-		SAMPLE_RATE,
-	);
-	const buffer = ctx.createBuffer(
-		1,
-		notes.length * samplesPerNote,
-		SAMPLE_RATE,
-	);
-	const data = buffer.getChannelData(0);
+	const toneBuffer = await Tone.Offline(() => {
+		const synth = new Tone.Synth({
+			oscillator: { type: "triangle" },
+			envelope: { attack: 0.005, decay: 0.3, sustain: 0.2, release: 0.3 },
+		}).toDestination();
 
-	notes.forEach((note, noteIdx) => {
-		const freq = noteToFrequency(note);
-		const offset = noteIdx * samplesPerNote;
-		for (let i = 0; i < samplesPerNote; i++) {
-			data[offset + i] = Math.sin((2 * Math.PI * freq * i) / SAMPLE_RATE);
-		}
-	});
+		notes.forEach((note, i) => {
+			synth.triggerAttackRelease(note, secondsPerNote, i * secondsPerNote);
+		});
+	}, duration);
 
-	return new Blob([toWav(buffer)], { type: "audio/wav" });
+	const audioBuffer = toneBuffer.get();
+	if (!audioBuffer) throw new Error("レンダリングに失敗しました");
+
+	return new Blob([toWav(audioBuffer)], { type: "audio/wav" });
 }
