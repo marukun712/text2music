@@ -1,0 +1,24 @@
+{
+	"name": "text2music",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"check": "deno check && deno run -A npm:@biomejs/biome check --write ./",
+		"check:unsafe": "deno check && deno run -A npm:@biomejs/biome check --write --unsafe ./"
+	},
+	"dependencies": {
+		"@types/audiobuffer-to-wav": "^1.0.4",
+		"audiobuffer-to-wav": "^1.0.0",
+		"meyda": "^5.6.3",
+		"pitchy": "^4.1.0",
+		"tone": "^15.1.22"
+	},
+	"devDependencies": {
+		"typescript": "~6.0.2",
+		"vite": "^8.2.0"
+	}
+}
